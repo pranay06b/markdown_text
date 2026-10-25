@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-24QLJWG1DZ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-24QLJWG1DZ');
+</script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f7f8fa" />
+  <title>ChatGPT Format Converter</title>
+  <meta name="description" content="Convert copied ChatGPT Markdown into formatted rich text for Word, Google Docs, email, and more." />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css" />
+  <style>
+    :root {
+      color-scheme: light;
+      --page: #f7f8fa;
+      --surface: #ffffff;
+      --surface-alt: #fbfcfd;
+      --text: #20242b;
+      --muted: #6b7280;
+      --line: #e4e7ec;
+      --line-strong: #d4d8df;
+      --accent: #245be8;
+      --accent-hover: #1748c7;
+      --accent-soft: #edf3ff;
+      --success: #167647;
+      --shadow: 0 8px 30px rgba(18, 27, 48, .045);
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; }
+    html { min-width: 320px; }
+    body {
+      margin: 0;
+      background: var(--page);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    button, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .site-header {
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 0 clamp(18px, 4.5vw, 66px);
+      background: rgba(255,255,255,.86);
+      border-bottom: 1px solid var(--line);
+    }
+    .brand { display: inline-flex; align-items: center; gap: 11px; font-weight: 750; letter-spacing: -.035em; font-size: 16px; }
+    .brand-mark {
+      display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px;
+      background: #20242b; color: white; font-size: 16px; font-weight: 800;
+    }
+    .header-note { color: var(--muted); font-size: 12px; }
+    main { max-width: 1440px; padding: 43px clamp(16px, 4.5vw, 66px) 52px; margin: 0 auto; }
+    .intro { text-align: center; max-width: 760px; margin: 0 auto 29px; }
+    .eyebrow { display: inline-flex; gap: 7px; align-items: center; padding: 5px 10px; border: 1px solid #dfe7fb; border-radius: 999px; background: var(--accent-soft); color: #2854b7; font-size: 11px; font-weight: 700; letter-spacing: .035em; text-transform: uppercase; }
+    h1 { margin: 13px 0 9px; font-size: clamp(28px, 3.5vw, 42px); letter-spacing: -.055em; line-height: 1.14; }
+    .intro p { margin: 0; color: var(--muted); font-size: 15px; }
+    .intro strong { color: #363d48; font-weight: 650; }
+    .workspace { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: stretch; }
+    .panel { min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+    .panel-head { min-height: 65px; padding: 15px 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); }
+    .panel-title-wrap { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .panel-icon { width: 30px; height: 30px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 9px; color: #515866; background: #fafbfc; flex: 0 0 auto; }
+    .panel-title { margin: 0; font-weight: 750; font-size: 14px; letter-spacing: -.01em; }
+    .panel-subtitle { color: var(--muted); font-size: 11px; margin-top: 1px; }
+    .head-actions { display: flex; gap: 7px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 34px; padding: 7px 11px; border: 1px solid var(--line-strong); border-radius: 9px; color: #363d48; background: white; font-size: 12px; font-weight: 650; white-space: nowrap; transition: background .15s, border-color .15s, transform .15s; }
+    .btn:hover { background: #f6f8fb; border-color: #bbc2cd; }
+    .btn:active { transform: translateY(1px); }
+    .btn-primary { color: white; background: var(--accent); border-color: var(--accent); }
+    .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+    .btn-quiet { color: var(--muted); border-color: transparent; background: transparent; }
+    .btn-quiet:hover { background: #f4f5f7; border-color: transparent; }
+    .btn svg { width: 14px; height: 14px; flex: 0 0 auto; }
+    .editor-wrap { padding: 14px; }
+    .editor-tools { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 0 2px 10px; color: var(--muted); font-size: 11px; }
+    .editor-tools .left-tools { display: flex; align-items: center; gap: 7px; }
+    .dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; background: #22a06b; }
+    textarea {
+      width: 100%; height: 492px; resize: vertical; display: block; padding: 17px 16px;
+      border: 1px solid var(--line); border-radius: 11px; outline: none; background: var(--surface-alt);
+      color: #252a33; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 12px; line-height: 1.75; tab-size: 2;
+    }
+    textarea::placeholder { color: #a0a6b1; }
+    textarea:focus { border-color: #8aa9ff; box-shadow: 0 0 0 3px rgba(36,91,232,.09); background: white; }
+    .editor-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 3px 0; color: var(--muted); font-size: 11px; }
+    .editor-footer .privacy { display: inline-flex; align-items: center; gap: 6px; }
+    .editor-footer svg { width: 13px; height: 13px; }
+    .output-head { align-items: center; }
+    .mode-select { appearance: none; max-width: 175px; padding: 8px 31px 8px 10px; border-radius: 9px; border: 1px solid var(--line-strong); background-color: #fff; color: #383e49; font-size: 12px; font-weight: 650; outline: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; }
+    .preview-wrap { padding: 14px; }
+    .preview-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 0 2px 10px; color: var(--muted); font-size: 11px; }
+    .preview-state { display: inline-flex; align-items: center; gap: 6px; }
+    .preview-state .dot { background: #4b76e8; }
+    .preview {
+      height: 492px; overflow: auto; padding: 20px 21px; border: 1px solid var(--line); border-radius: 11px;
+      background: white; color: #242830;
+    }
+    .preview-content { font-size: 13px; line-height: 1.72; overflow-wrap: anywhere; }
+    .preview-content > :first-child { margin-top: 0 !important; }
+    .preview-content > :last-child { margin-bottom: 0 !important; }
+    .preview-content h1,.preview-content h2,.preview-content h3,.preview-content h4,.preview-content h5,.preview-content h6 { color: #20242b; line-height: 1.3; letter-spacing: -.025em; margin: 1.35em 0 .55em; }
+    .preview-content h1 { font-size: 1.8em; } .preview-content h2 { font-size: 1.5em; } .preview-content h3 { font-size: 1.25em; } .preview-content h4 { font-size: 1.1em; }
+    .preview-content p { margin: 0 0 1em; }
+    .preview-content ul,.preview-content ol { padding-left: 1.6em; margin: .4em 0 1em; }
+    .preview-content li { margin: .2em 0; padding-left: .15em; }
+    .preview-content li > ul,.preview-content li > ol { margin: .25em 0; }
+    .preview-content blockquote { margin: 1em 0; padding: .15em 0 .15em 1em; border-left: 3px solid #d8dde7; color: #666d79; }
+    .preview-content blockquote > :last-child { margin-bottom: 0; }
+    .preview-content a { color: #245be8; text-decoration: underline; text-underline-offset: 2px; }
+    .preview-content hr { border: 0; border-top: 1px solid #e1e5eb; margin: 1.6em 0; }
+    .preview-content :not(pre) > code { padding: .14em .36em; border-radius: 4px; background: #f0f2f5; font: .88em ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: #b42318; }
+    .preview-content pre { padding: 13px 14px; margin: 1em 0; border-radius: 8px; overflow: auto; background: #f5f6f8; border: 1px solid #e7e9ed; font-size: 11px; line-height: 1.6; }
+    .preview-content pre code { font: inherit; color: #262c36; white-space: pre; }
+    .table-scroll { overflow-x: auto; margin: 1.15em 0; }
+    .preview-content table { width: 100%; border-collapse: collapse; font-size: .94em; }
+    .preview-content th,.preview-content td { padding: 8px 10px; border: 1px solid #dfe3e9; text-align: left; vertical-align: top; }
+    .preview-content th { background: #f6f7f9; font-weight: 700; }
+    .preview-content img { max-width: 100%; height: auto; }
+    .preview-content .katex-display { overflow-x: auto; overflow-y: hidden; padding: .15em 0; }
+    .empty-state { height: 100%; min-height: 350px; display: flex; align-items: center; justify-content: center; flex-direction: column; text-align: center; color: var(--muted); padding: 24px; }
+    .empty-art { width: 58px; height: 58px; display: grid; place-items: center; border: 1px solid #e1e6ef; background: #f7f9fc; color: #8a94a5; border-radius: 17px; margin-bottom: 14px; }
+    .empty-art svg { width: 25px; height: 25px; }
+    .empty-state strong { color: #3b414c; font-size: 13px; margin-bottom: 5px; }
+    .empty-state span { max-width: 260px; font-size: 12px; line-height: 1.65; }
+    .raw-output { display: none; height: 100%; min-height: 350px; margin: 0; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; color: #333a46; font: 12px/1.7 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .output-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px; border-top: 1px solid var(--line); background: #fdfdfe; }
+    .format-hint { color: var(--muted); font-size: 11px; max-width: 245px; }
+    .output-actions-right { display: flex; align-items: center; gap: 8px; }
+    .below { display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 13px; margin-top: 19px; }
+    .tip { border: 1px solid var(--line); border-radius: 12px; background: rgba(255,255,255,.65); padding: 13px 15px; display: flex; gap: 10px; align-items: flex-start; }
+    .tip-icon { flex: 0 0 auto; color: #526177; width: 20px; padding-top: 1px; }
+    .tip-icon svg { width: 17px; height: 17px; }
+    .tip strong { display: block; font-size: 12px; margin-bottom: 2px; }
+    .tip p { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.6; }
+    .toast { position: fixed; bottom: 23px; left: 50%; z-index: 10; transform: translate(-50%, 18px); opacity: 0; pointer-events: none; padding: 11px 15px; border-radius: 10px; background: #20242b; color: white; box-shadow: 0 8px 25px #20242b2b; font-size: 12px; transition: opacity .18s, transform .18s; }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    .toast.success { background: #176c45; }
+    footer { padding: 23px 20px 32px; text-align: center; color: #89909c; font-size: 11px; }
+    @media (max-width: 1020px) { .workspace { grid-template-columns: 1fr; } textarea,.preview { height: 390px; } .below { grid-template-columns: 1fr; } .intro { margin-bottom: 23px; } }
+    @media (max-width: 560px) {
+      .site-header { height: 60px; padding: 0 15px; } .header-note { display: none; } main { padding-top: 30px; padding-left: 12px; padding-right: 12px; }
+      h1 { font-size: 30px; } .intro p { font-size: 13px; } .panel-head { padding: 12px; align-items: flex-start; } .panel-head.output-head { align-items: center; }
+      .panel-subtitle { display: none; } .head-actions { gap: 3px; } .btn { padding: 7px 8px; } .editor-wrap,.preview-wrap { padding: 10px; } textarea,.preview { height: 340px; }
+      .output-actions { align-items: flex-start; flex-direction: column; } .output-actions-right { width: 100%; } .output-actions-right .btn-primary { flex: 1; } .format-hint { max-width: none; }
+    }
+  </style>
+  <script defer src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand"><span class="brand-mark">ƒ</span><span>ChatGPT Format Converter</span></div>
+    <div class="header-note">Markdown in. Formatted text out.</div>
+  </header>
+
+  <main>
+    <section class="intro">
+      <span class="eyebrow"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3m13-5h3a2 2 0 0 1 2 2v3M3 16v3a2 2 0 0 0 2 2h3m13-5v3a2 2 0 0 1-2 2h-3"/><path d="m8 12 2.5 2.5L16 9"/></svg> Free · Runs in your browser</span>
+      <h1>Make ChatGPT text look right<br class="desktop-break" /> wherever you paste it.</h1>
+      <p>Paste a raw ChatGPT response, preview the formatting, and copy it as <strong>rich text</strong> for Word, Google Docs, email, and more.</p>
+    </section>
+
+    <section class="workspace" aria-label="Markdown converter">
+      <article class="panel">
+        <div class="panel-head">
+          <div class="panel-title-wrap">
+            <span class="panel-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13"/><path d="M3 6h.01M3 12h.01M3 18h.01" stroke-linecap="round"/></svg></span>
+            <div><h2 class="panel-title">Input</h2><div class="panel-subtitle">Paste your copied ChatGPT response</div></div>
+          </div>
+          <div class="head-actions">
+            <button class="btn" id="pasteBtn" type="button" title="Paste from clipboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="8" y="4" width="12" height="16" rx="2"/><path d="M16 4V3a1 1 0 0 0-1-1H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h3"/></svg>Paste</button>
+            <button class="btn btn-quiet" id="clearBtn" type="button">Clear</button>
+          </div>
+        </div>
+        <div class="editor-wrap">
+          <div class="editor-tools"><div class="left-tools"><span class="dot"></span><span>Markdown / raw text</span></div><button class="btn btn-quiet" id="exampleBtn" type="button">Load example</button></div>
+          <textarea id="sourceInput" spellcheck="false" aria-label="Paste raw Markdown text here" placeholder="# Paste ChatGPT output here...
+
+Headings, **bold**, lists, tables, links, code and math are supported.
+
+Then choose Copy formatted to paste the result with its formatting intact."></textarea>
+          <div class="editor-footer"><span id="inputStats">0 characters · 0 words</span><span class="privacy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Text stays in your browser</span></div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head output-head">
+          <div class="panel-title-wrap">
+            <span class="panel-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/><path d="m15 17 2 2 4-4"/></svg></span>
+            <div><h2 class="panel-title">Output</h2><div class="panel-subtitle">Preview before you copy</div></div>
+          </div>
+          <select class="mode-select" id="outputMode" aria-label="Output format">
+            <option value="rich">Rich text</option>
+            <option value="plain">Plain text</option>
+            <option value="html">HTML source</option>
+          </select>
+        </div>
+        <div class="preview-wrap">
+          <div class="preview-toolbar"><span class="preview-state"><span class="dot"></span><span id="previewLabel">Formatted preview</span></span><span id="outputStats">Waiting for input</span></div>
+          <div class="preview" id="previewBox">
+            <div class="empty-state" id="emptyState"><div class="empty-art"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 3h7l5 5v13H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="M14 3v6h5M9 13h6M9 17h6"/></svg></div><strong>Your formatted text will appear here</strong><span>Paste Markdown on the left to see headings, lists, tables, links and equations rendered into a clean document.</span></div>
+            <div id="richPreview" class="preview-content" hidden></div>
+            <pre id="rawPreview" class="raw-output"></pre>
+          </div>
+        </div>
+        <div class="output-actions">
+          <div class="format-hint" id="formatHint">Best for Word, Google Docs, Gmail, and most rich-text editors.</div>
+          <div class="output-actions-right">
+            <button class="btn" id="downloadBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12m-5-5 5 5 5-5"/><path d="M5 17v3h14v-3"/></svg>Download</button>
+            <button class="btn btn-primary" id="copyBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg><span id="copyLabel">Copy formatted</span></button>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="below" aria-label="Helpful information">
+      <div class="tip"><span class="tip-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3a7 7 0 0 0-4 12.75c.7.47 1 1.07 1 1.75h6c0-.68.3-1.28 1-1.75A7 7 0 0 0 12 3Z"/><path d="M9 21h6M9 18h6"/></svg></span><div><strong>Preserves structure</strong><p>Headings, bold, italics, lists, links, tables, blockquotes, code and supported math are rendered before copying.</p></div></div>
+      <div class="tip"><span class="tip-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span><div><strong>Copy once, paste anywhere</strong><p>Rich-text copying supplies both HTML and plain text clipboard formats to improve compatibility across apps.</p></div></div>
+      <div class="tip"><span class="tip-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/><path d="m9 12 2 2 4-4"/></svg></span><div><strong>Private by design</strong><p>Your pasted content is processed locally in the page and is not sent to a server by this tool.</p></div></div>
+    </section>
+  </main>
+  <footer>Designed for clean copy-and-paste workflows · No account required</footer>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const $ = (selector) => document.querySelector(selector);
+      const input = $('#sourceInput');
+      const preview = $('#richPreview');
+      const rawPreview = $('#rawPreview');
+      const emptyState = $('#emptyState');
+      const modeSelect = $('#outputMode');
+      const toast = $('#toast');
+      const copyButton = $('#copyBtn');
+      const copyLabel = $('#copyLabel');
+      const inputStats = $('#inputStats');
+      const outputStats = $('#outputStats');
+      const previewLabel = $('#previewLabel');
+      const formatHint = $('#formatHint');
+      let toastTimer;
+      let katexCss = '';
+      let renderTimer;
+      const sample = `# Inequality: worked example
+
+Solve the following inequality:
+
+\\[
+\\frac{1}{x+5} \\leq \\frac{1}{2x-3}
+\\]
+
+## 1. Find the restricted values
+
+The denominators cannot be zero, so **exclude** these values:
+
+- \\(x \\neq -5\\)
+- \\(x \\neq \\frac{3}{2}\\)
+
+## 2. Simplify
+
+\\[
+\\frac{1}{x+5}-\\frac{1}{2x-3} \\leq 0
+\\]
+
+\\[
+\\boxed{\\frac{x-8}{(x+5)(2x-3)} \\leq 0}
+\\]
+
+| Interval | Sign | Result |
+| --- | --- | --- |
+| \\(x < -5\\) | Negative | Include |
+| \\(-5 < x < \\frac{3}{2}\\) | Positive | Exclude |
+| \\(\\frac{3}{2} < x < 8\\) | Negative | Include |
+| \\(x > 8\\) | Positive | Exclude |
+
+**Final answer:**
+
+\\[
+x \\in (-\\infty,-5) \\cup \\left(\\frac{3}{2},8\\right]
+\\]
+
+> Tip: Never cross-multiply a rational inequality unless you know the sign of the denominator.`;
+
+      const escapeHtml = (str) => str.replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+
+      function showToast(message, success = false) {
+        toast.textContent = message;
+        toast.classList.toggle('success', success);
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
+      }
+
+      function getMarkedHtml(markdown) {
+        if (!window.marked) return `<pre>${escapeHtml(markdown)}</pre>`;
+        marked.setOptions({ gfm: true, breaks: false, pedantic: false });
+        return marked.parse(markdown || '');
+      }
+
+      function cleanAndRender(markdown) {
+        const html = getMarkedHtml(markdown);
+        const clean = window.DOMPurify ? DOMPurify.sanitize(html, {
+          USE_PROFILES: { html: true },
+          ADD_TAGS: ['math', 'semantics', 'mrow', 'mi', 'mn', 'mo', 'mtext', 'mfrac', 'msup', 'msub', 'msqrt', 'mover', 'munder', 'mtable', 'mtr', 'mtd', 'annotation'],
+          ADD_ATTR: ['xmlns', 'display', 'encoding', 'mathvariant', 'stretchy', 'fence', 'separator', 'aria-hidden', 'style']
+        }) : html;
+        preview.innerHTML = clean;
+        wrapTables(preview);
+        if (window.renderMathInElement) {
+          try {
+            renderMathInElement(preview, {
+              delimiters: [
+                { left: '$$', right: '$$', display: true },
+                { left: '\\[', right: '\\]', display: true },
+                { left: '\\(', right: '\\)', display: false },
+                { left: '$', right: '$', display: false }
+              ],
+              throwOnError: false,
+              ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            });
+          } catch (error) { console.warn('Math rendering skipped:', error); }
+        }
+      }
+
+      function wrapTables(root) {
+        root.querySelectorAll('table').forEach((table) => {
+          if (table.parentElement && table.parentElement.classList.contains('table-scroll')) return;
+          const wrapper = document.createElement('div');
+          wrapper.className = 'table-scroll';
+          table.parentNode.insertBefore(wrapper, table);
+          wrapper.appendChild(table);
+        });
+      }
+
+      function updateStats() {
+        const value = input.value;
+        const trimmed = value.trim();
+        const words = trimmed ? trimmed.split(/\s+/).length : 0;
+        inputStats.textContent = `${value.length.toLocaleString()} characters · ${words.toLocaleString()} words`;
+        outputStats.textContent = value.trim() ? `${words.toLocaleString()} words` : 'Waiting for input';
+      }
+
+      function render() {
+        const value = input.value;
+        updateStats();
+        if (!value.trim()) {
+          preview.hidden = true;
+          rawPreview.style.display = 'none';
+          emptyState.style.display = 'flex';
+          return;
+        }
+        emptyState.style.display = 'none';
+        preview.hidden = false;
+        cleanAndRender(value);
+        syncMode();
+      }
+
+      function toPlainText(root) {
+        // Clone and remove presentation-only wrappers while preserving useful breaks and table structure.
+        const clone = root.cloneNode(true);
+        clone.querySelectorAll('br').forEach((node) => node.replaceWith(document.createTextNode('\n')));
+        clone.querySelectorAll('li').forEach((li) => {
+          const prefix = li.parentElement && li.parentElement.tagName === 'OL' ? '• ' : '• ';
+          li.insertBefore(document.createTextNode(prefix), li.firstChild);
+          li.appendChild(document.createTextNode('\n'));
+        });
+        clone.querySelectorAll('tr').forEach((tr) => {
+          const cells = Array.from(tr.querySelectorAll('th,td')).map((cell) => cell.innerText.trim());
+          tr.replaceWith(document.createTextNode(cells.join('  |  ') + '\n'));
+        });
+        clone.querySelectorAll('p,div,blockquote,h1,h2,h3,h4,h5,h6,pre,hr').forEach((node) => {
+          if (node.tagName === 'HR') node.replaceWith(document.createTextNode('\n────────────\n'));
+          else if (node.parentNode) node.appendChild(document.createTextNode('\n'));
+        });
+        return clone.innerText.replace(/\n{3,}/g, '\n\n').trim();
+      }
+
+      function getPlainText() {
+        return toPlainText(preview);
+      }
+
+      function makeCopyHtml() {
+        const clone = preview.cloneNode(true);
+        clone.removeAttribute('id');
+        clone.classList.remove('preview-content');
+        inlineStyles(clone);
+        const content = clone.innerHTML;
+        const baseCss = `body{font-family:Arial,Helvetica,sans-serif;font-size:11pt;line-height:1.55;color:#242830}p{margin:0 0 10pt}h1{font-size:21pt;margin:16pt 0 8pt}h2{font-size:17pt;margin:15pt 0 7pt}h3{font-size:14pt;margin:13pt 0 6pt}h4,h5,h6{font-size:12pt;margin:12pt 0 5pt}ul,ol{margin:5pt 0 10pt;padding-left:24pt}li{margin:2pt 0}a{color:#245be8;text-decoration:underline}blockquote{margin:10pt 0;padding-left:10pt;border-left:3px solid #d8dde7;color:#666d79}pre{font-family:Consolas,monospace;font-size:9pt;padding:10pt;background:#f5f6f8;border:1px solid #e7e9ed}code{font-family:Consolas,monospace;background:#f0f2f5}table{border-collapse:collapse;width:100%;margin:10pt 0}th,td{border:1px solid #dfe3e9;padding:6pt 8pt;text-align:left;vertical-align:top}th{background:#f6f7f9;font-weight:bold}hr{border:0;border-top:1px solid #dfe3e9;margin:16pt 0}img{max-width:100%;height:auto}`;
+        const mathStyle = katexCss ? katexCss : '';
+        return `<!doctype html><html><head><meta charset="utf-8"><style>${baseCss}\n${mathStyle}</style></head><body><div style="font-family:Arial,Helvetica,sans-serif;font-size:11pt;line-height:1.55;color:#242830">${content}</div></body></html>`;
+      }
+
+      function inlineStyles(root) {
+        const rules = {
+          P: 'margin:0 0 10pt;line-height:1.55;',
+          H1: 'font-family:Arial,Helvetica,sans-serif;font-size:21pt;font-weight:700;line-height:1.25;margin:16pt 0 8pt;color:#20242b;',
+          H2: 'font-family:Arial,Helvetica,sans-serif;font-size:17pt;font-weight:700;line-height:1.3;margin:15pt 0 7pt;color:#20242b;',
+          H3: 'font-family:Arial,Helvetica,sans-serif;font-size:14pt;font-weight:700;line-height:1.3;margin:13pt 0 6pt;color:#20242b;',
+          H4: 'font-size:12pt;font-weight:700;margin:12pt 0 5pt;', H5: 'font-size:11pt;font-weight:700;margin:10pt 0 5pt;', H6: 'font-size:10pt;font-weight:700;margin:10pt 0 5pt;',
+          UL: 'margin:5pt 0 10pt;padding-left:24pt;', OL: 'margin:5pt 0 10pt;padding-left:24pt;', LI: 'margin:2pt 0;',
+          BLOCKQUOTE: 'margin:10pt 0;padding:2pt 0 2pt 10pt;border-left:3px solid #d8dde7;color:#666d79;',
+          PRE: 'font-family:Consolas,monospace;font-size:9pt;line-height:1.5;padding:10pt;background:#f5f6f8;border:1px solid #e7e9ed;white-space:pre;overflow:auto;',
+          TABLE: 'border-collapse:collapse;width:100%;margin:10pt 0;', TH: 'border:1px solid #dfe3e9;padding:6pt 8pt;text-align:left;vertical-align:top;background:#f6f7f9;font-weight:bold;',
+          TD: 'border:1px solid #dfe3e9;padding:6pt 8pt;text-align:left;vertical-align:top;',
+          HR: 'border:0;border-top:1px solid #dfe3e9;margin:16pt 0;', IMG: 'max-width:100%;height:auto;', A: 'color:#245be8;text-decoration:underline;',
+          CODE: 'font-family:Consolas,monospace;font-size:9.5pt;',
+          DIV: 'line-height:1.55;'
+        };
+        root.style.cssText = 'font-family:Arial,Helvetica,sans-serif;font-size:11pt;line-height:1.55;color:#242830;';
+        root.querySelectorAll('*').forEach((node) => {
+          const custom = rules[node.tagName];
+          if (custom) node.style.cssText += custom;
+          if (node.tagName === 'STRONG' || node.tagName === 'B') node.style.fontWeight = '700';
+          if (node.tagName === 'EM' || node.tagName === 'I') node.style.fontStyle = 'italic';
+          if (node.tagName === 'TH' || node.tagName === 'TD') node.style.borderCollapse = 'collapse';
+          if (node.tagName === 'DIV' && node.classList.contains('table-scroll')) node.style.cssText += 'overflow-x:auto;margin:10pt 0;';
+        });
+      }
+
+      function syncMode() {
+        const mode = modeSelect.value;
+        const hasInput = Boolean(input.value.trim());
+        if (!hasInput) return;
+        preview.style.display = mode === 'rich' ? 'block' : 'none';
+        rawPreview.style.display = mode === 'rich' ? 'none' : 'block';
+        if (mode === 'plain') {
+          rawPreview.textContent = getPlainText();
+          previewLabel.textContent = 'Plain-text output';
+          formatHint.textContent = 'Removes Markdown styling and keeps readable text structure.';
+          copyLabel.textContent = 'Copy plain text';
+        } else if (mode === 'html') {
+          rawPreview.textContent = makeCopyHtml();
+          previewLabel.textContent = 'HTML source';
+          formatHint.textContent = 'Copies the generated HTML source for use in an editor or webpage.';
+          copyLabel.textContent = 'Copy HTML';
+        } else {
+          previewLabel.textContent = 'Formatted preview';
+          formatHint.textContent = 'Best for Word, Google Docs, Gmail, and most rich-text editors.';
+          copyLabel.textContent = 'Copy formatted';
+        }
+      }
+
+      async function copyToClipboard() {
+        if (!input.value.trim()) { showToast('Paste some text first.'); input.focus(); return; }
+        const mode = modeSelect.value;
+        try {
+          if (mode === 'plain') {
+            await navigator.clipboard.writeText(getPlainText());
+            showToast('Plain text copied.', true);
+            return;
+          }
+          if (mode === 'html') {
+            await navigator.clipboard.writeText(makeCopyHtml());
+            showToast('HTML source copied.', true);
+            return;
+          }
+          const html = makeCopyHtml();
+          const text = getPlainText();
+          if (navigator.clipboard && window.ClipboardItem) {
+            const item = new ClipboardItem({
+              'text/html': new Blob([html], { type: 'text/html' }),
+              'text/plain': new Blob([text], { type: 'text/plain' })
+            });
+            await navigator.clipboard.write([item]);
+            showToast('Formatted text copied — paste it into your document.', true);
+          } else {
+            fallbackRichCopy();
+          }
+        } catch (error) {
+          console.warn('Clipboard API failed:', error);
+          if (mode === 'rich') fallbackRichCopy();
+          else showToast('Clipboard permission was blocked. Allow clipboard access and try again.');
+        }
+      }
+
+      function fallbackRichCopy() {
+        const range = document.createRange();
+        const selection = window.getSelection();
+        const previous = document.activeElement;
+        preview.style.display = 'block';
+        preview.hidden = false;
+        range.selectNodeContents(preview);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        let success = false;
+        try { success = document.execCommand('copy'); } catch (_) { success = false; }
+        selection.removeAllRanges();
+        syncMode();
+        if (previous && typeof previous.focus === 'function') previous.focus();
+        showToast(success ? 'Formatted text copied.' : 'Clipboard access was blocked. Use HTTPS or localhost.', success);
+      }
+
+      function downloadOutput() {
+        if (!input.value.trim()) { showToast('Paste some text first.'); return; }
+        const mode = modeSelect.value;
+        let blob, filename;
+        if (mode === 'plain') { blob = new Blob([getPlainText()], { type: 'text/plain;charset=utf-8' }); filename = 'formatted-text.txt'; }
+        else if (mode === 'html') { blob = new Blob([makeCopyHtml()], { type: 'text/html;charset=utf-8' }); filename = 'formatted-text.html'; }
+        else { blob = new Blob([makeCopyHtml()], { type: 'text/html;charset=utf-8' }); filename = 'formatted-text.html'; }
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a'); link.href = url; link.download = filename; document.body.appendChild(link); link.click(); link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        showToast(`Downloaded ${filename}.`, true);
+      }
+
+      async function pasteFromClipboard() {
+        try {
+          if (!navigator.clipboard || !navigator.clipboard.readText) throw new Error('Clipboard API unavailable');
+          input.value = await navigator.clipboard.readText();
+          render();
+          input.focus();
+          showToast('Text pasted from clipboard.', true);
+        } catch (_) {
+          input.focus();
+          showToast('Use Ctrl/⌘ + V inside the input box to paste.');
+        }
+      }
+
+      input.addEventListener('input', () => { clearTimeout(renderTimer); renderTimer = setTimeout(render, 80); });
+      modeSelect.addEventListener('change', syncMode);
+      $('#copyBtn').addEventListener('click', copyToClipboard);
+      $('#downloadBtn').addEventListener('click', downloadOutput);
+      $('#pasteBtn').addEventListener('click', pasteFromClipboard);
+      $('#clearBtn').addEventListener('click', () => { input.value = ''; render(); input.focus(); showToast('Input cleared.'); });
+      $('#exampleBtn').addEventListener('click', () => { input.value = sample; render(); showToast('Example loaded.', true); });
+
+      // Embed KaTeX's stylesheet in copied HTML when available, so formula formatting has a better chance of surviving paste.
+      fetch('https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css')
+        .then((response) => response.ok ? response.text() : '')
+        .then((css) => { katexCss = css; if (modeSelect.value === 'html' && input.value.trim()) rawPreview.textContent = makeCopyHtml(); })
+        .catch(() => { katexCss = ''; });
+
+      render();
+    });
+  </script>
+</body>
+</html>
+ 
