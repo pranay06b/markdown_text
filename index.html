@@ -1,22 +1,54 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-24QLJWG1DZ"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-24QLJWG1DZ');
-</script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#f7f8fa" />
-  <title>ChatGPT Format Converter</title>
-  <meta name="description" content="Convert copied ChatGPT Markdown into formatted rich text for Word, Google Docs, email, and more." />
+  <title>ChatGPT Text Formatter | Copy Markdown as Rich Text</title>
+  <meta name="description" content="Free ChatGPT text formatter. Convert copied ChatGPT Markdown into formatted text with headings, bold, lists, tables, links, code and equations for Word and Google Docs." />
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
+  <meta name="googlebot" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
+  <meta name="keywords" content="ChatGPT text formatter, ChatGPT formatting, Markdown to rich text, ChatGPT copy paste formatting, Markdown converter, copy formatted text, ChatGPT to Word, ChatGPT to Google Docs" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="ChatGPT Format Converter" />
+  <meta property="og:title" content="ChatGPT Text Formatter | Copy Markdown as Rich Text" />
+  <meta property="og:description" content="Turn copied ChatGPT Markdown into readable, formatted text. Preview and copy headings, lists, tables, links, code and equations into compatible editors." />
+  <meta property="og:locale" content="en_US" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="ChatGPT Text Formatter | Copy Markdown as Rich Text" />
+  <meta name="twitter:description" content="Convert raw ChatGPT Markdown to formatted rich text for Word, Google Docs, email and more." />
+  <meta name="application-name" content="ChatGPT Format Converter" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "ChatGPT Format Converter",
+    "alternateName": "ChatGPT Text Formatter",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Any",
+    "isAccessibleForFree": true,
+    "description": "A free in-browser tool that converts copied ChatGPT Markdown into formatted rich text for compatible apps such as Word and Google Docs.",
+    "featureList": [
+      "Convert Markdown to formatted rich text",
+      "Preview formatted ChatGPT responses",
+      "Copy as rich text, plain text, or HTML",
+      "Render supported LaTeX mathematics",
+      "Download formatted text as HTML or TXT",
+      "Process pasted text locally in the browser"
+    ]
+  }
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-24QLJWG1DZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-24QLJWG1DZ');
+  </script>
   <style>
     :root {
       color-scheme: light;
@@ -137,6 +169,14 @@
     .empty-state strong { color: #3b414c; font-size: 13px; margin-bottom: 5px; }
     .empty-state span { max-width: 260px; font-size: 12px; line-height: 1.65; }
     .raw-output { display: none; height: 100%; min-height: 350px; margin: 0; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; color: #333a46; font: 12px/1.7 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .faq-section { max-width: 1000px; margin: 35px auto 0; }
+    .faq-heading { margin: 0 0 7px; font-size: clamp(22px, 2.6vw, 29px); letter-spacing: -.035em; }
+    .faq-intro { margin: 0 0 18px; color: var(--muted); font-size: 13px; }
+    .faq-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .faq-item { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 17px 18px; }
+    .faq-item h3 { margin: 0 0 7px; font-size: 13px; letter-spacing: -.01em; }
+    .faq-item p { margin: 0; color: #626a77; font-size: 12px; line-height: 1.75; }
+    @media (max-width: 700px) { .faq-grid { grid-template-columns: 1fr; } }
     .output-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px; border-top: 1px solid var(--line); background: #fdfdfe; }
     .format-hint { color: var(--muted); font-size: 11px; max-width: 245px; }
     .output-actions-right { display: flex; align-items: center; gap: 8px; }
@@ -234,7 +274,70 @@ Then choose Copy formatted to paste the result with its formatting intact."></te
       <div class="tip"><span class="tip-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span><div><strong>Copy once, paste anywhere</strong><p>Rich-text copying supplies both HTML and plain text clipboard formats to improve compatibility across apps.</p></div></div>
       <div class="tip"><span class="tip-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/><path d="m9 12 2 2 4-4"/></svg></span><div><strong>Private by design</strong><p>Your pasted content is processed locally in the page and is not sent to a server by this tool.</p></div></div>
     </section>
+
+    <section class="faq-section" aria-labelledby="faq-heading">
+      <h2 class="faq-heading" id="faq-heading">ChatGPT text formatter: frequently asked questions</h2>
+      <p class="faq-intro">Quick answers about converting, copying, and preserving ChatGPT response formatting.</p>
+      <div class="faq-grid">
+        <article class="faq-item">
+          <h3>How do I copy ChatGPT text with formatting?</h3>
+          <p>Paste the copied response into the input box, check the formatted preview, keep “Rich text” selected, and click “Copy formatted.” Then paste into a compatible destination such as Word or Google Docs.</p>
+        </article>
+        <article class="faq-item">
+          <h3>Which formatting does the converter support?</h3>
+          <p>It supports Markdown headings, bold and italic text, ordered and unordered lists, tables, links, blockquotes, code blocks, and common LaTeX math delimiters.</p>
+        </article>
+        <article class="faq-item">
+          <h3>Can I paste the result into Microsoft Word or Google Docs?</h3>
+          <p>Yes. “Copy formatted” places HTML and plain text on the clipboard where supported. The final appearance can vary by destination app, especially for equations and complex tables.</p>
+        </article>
+        <article class="faq-item">
+          <h3>Is my ChatGPT text uploaded or stored?</h3>
+          <p>The converter renders the text in your browser and does not send the pasted content to an application server. Google Analytics is used for website usage measurement; the converter does not intentionally send the text you paste as an analytics event.</p>
+        </article>
+      </div>
+    </section>
   </main>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How do I copy ChatGPT text with formatting?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Paste the copied response into the input box, check the formatted preview, keep Rich text selected, and click Copy formatted. Then paste into a compatible destination such as Word or Google Docs."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Which formatting does the converter support?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "It supports Markdown headings, bold and italic text, ordered and unordered lists, tables, links, blockquotes, code blocks, and common LaTeX math delimiters."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I paste the result into Microsoft Word or Google Docs?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Copy formatted places HTML and plain text on the clipboard where supported. The final appearance can vary by destination app, especially for equations and complex tables."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is my ChatGPT text uploaded or stored?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The converter renders the text in your browser and does not send the pasted content to an application server. Google Analytics is used for website usage measurement; the converter does not intentionally send the text you paste as an analytics event."
+        }
+      }
+    ]
+  }
+  </script>
   <footer>Designed for clean copy-and-paste workflows · No account required</footer>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
@@ -550,4 +653,3 @@ x \\in (-\\infty,-5) \\cup \\left(\\frac{3}{2},8\\right]
   </script>
 </body>
 </html>
- 
