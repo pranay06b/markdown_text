@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ChatGPT Math Converter</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--tx:#14181f;--mut:#5b6472;--bd:#e2e5ea;--pri:#2563eb;--prih:#1d4ed8;--ta:#fbfcfd;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1218;--card:#181c24;--tx:#e8ebf0;--mut:#98a2b3;--bd:#2a303b;--ta:#12161d;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1218;--card:#181c24;--tx:#e8ebf0;--mut:#98a2b3;--bd:#2a303b;--ta:#12161d;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--tx);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:1240px;margin:0 auto;padding:28px 18px 48px}
+.brand{font-weight:700;color:var(--pri);font-size:15px;letter-spacing:.2px}
+h1{font-size:30px;margin:14px 0 6px;line-height:1.2}
+.sub{color:var(--mut);margin:0 0 22px;max-width:720px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:860px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.ch{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-bottom:1px solid var(--bd);flex-wrap:wrap}
+.ch h2{margin:0;font-size:16px}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+button{font:inherit;font-size:13.5px;padding:7px 13px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--tx);cursor:pointer}
+button:hover{border-color:var(--pri)}
+button.p{background:var(--pri);border-color:var(--pri);color:#fff}
+button.p:hover{background:var(--prih)}
+textarea{width:100%;min-height:560px;flex:1;border:0;resize:vertical;padding:16px;font:13.5px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--ta);color:var(--tx);outline:none}
+.scroll{overflow:auto;max-height:640px;background:#fff}
+#cap{background:#fff;color:#0d0d0d;padding:26px 28px;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;min-height:560px;overflow-wrap:anywhere}
+#cap p{margin:0 0 14px}
+#cap h1,#cap h2,#cap h3,#cap h4{margin:22px 0 10px;line-height:1.3}
+#cap h1{font-size:1.6em}#cap h2{font-size:1.35em}#cap h3{font-size:1.1em}#cap h4{font-size:1em}
+#cap ul,#cap ol{margin:0 0 14px;padding-left:28px}
+#cap li{margin:4px 0}
+#cap code{background:#f0f0f0;border-radius:4px;padding:1px 5px;font:.9em ui-monospace,Menlo,Consolas,monospace}
+#cap pre{background:#f6f6f6;border-radius:10px;padding:14px;overflow:auto;margin:0 0 14px}
+#cap pre code{background:none;padding:0}
+#cap blockquote{margin:0 0 14px;padding:2px 14px;border-left:3px solid #c8c8c8;color:#444}
+#cap table{border-collapse:collapse;margin:0 0 16px;max-width:100%}
+#cap th,#cap td{border:1px solid #d4d4d4;padding:8px 14px;text-align:left}
+#cap th{background:#f4f4f4}
+#cap hr{border:0;border-top:1px solid #ddd;margin:20px 0}
+#cap a{color:#1a56c4}
+#cap mjx-container[display="true"]{margin:12px 0!important}
+#cap .ph{color:#8a8f98}
+.tip{color:var(--mut);font-size:13px;margin-top:14px}
+#toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#111;color:#fff;padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:50;max-width:90vw}
+#toast.on{opacity:1}
+#dlg{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:40;padding:20px}
+#dlg.on{display:flex}
+#dlg div{background:var(--card);border-radius:14px;padding:16px;max-width:900px;max-height:90vh;overflow:auto}
+#dlg img{max-width:100%;display:block;margin:10px 0;border:1px solid var(--bd);background:#fff}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">∑ ChatGPT Math Converter</div>
+  <h1>ChatGPT Markdown &amp; LaTeX to Image</h1>
+  <p class="sub">Paste raw text copied from ChatGPT. Headings, lists, tables and math (\[ … \], \( … \), $$ … $$) are rendered the way ChatGPT shows them. Then copy the result as an image and paste it anywhere.</p>
+  <div class="grid">
+    <section class="card">
+      <div class="ch"><h2>Input</h2><div class="btns"><button id="paste">Paste</button><button id="sample">Sample</button><button id="clear">Clear</button></div></div>
+      <textarea id="inp" placeholder="Paste raw ChatGPT text here…" spellcheck="false"></textarea>
+    </section>
+    <section class="card">
+      <div class="ch"><h2>Output</h2><div class="btns"><button class="p" id="copy">Copy as image</button><button id="dl">Download PNG</button></div></div>
+      <div class="scroll"><div id="cap"></div></div>
+    </section>
+  </div>
+  <p class="tip">Everything runs in your browser; nothing is uploaded. If your browser blocks image copying, a preview opens where you can right-click or long-press the image to copy it.</p>
+</div>
+<div id="toast"></div>
+<div id="dlg"><div><strong>Image preview</strong> — right-click or long-press to copy or save<img id="pv" alt="Rendered output"><button id="cls">Close</button></div></div>
+
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],processEscapes:false},svg:{fontCache:'local'},options:{enableMenu:false},startup:{typeset:false,ready:function(){MathJax.startup.defaultReady();render();}}};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const inp=$('inp'),cap=$('cap');
+const SAMPLE=String.raw`We need to solve:
+
+\\[ \frac{1}{x+5}\leq \frac{1}{2x-3} \\]
+
+### Step 1: Find the restricted values
+
+The denominators cannot be zero.
+
+\\[ x+5\neq 0\Rightarrow x\neq -5 \\]
+
+\\[ 2x-3\neq 0\Rightarrow x\neq \frac32 \\]
+
+### Step 2: Bring everything to one side
+
+\\[ \frac{1}{x+5}-\frac{1}{2x-3}\leq 0 \\]
+
+Take the LCM and simplify:
+
+\\[ \frac{(2x-3)-(x+5)}{(x+5)(2x-3)}\leq 0 \\]
+
+\\[ \boxed{\frac{x-8}{(x+5)(2x-3)}\leq 0} \\]
+
+### Step 3: Find the critical points
+
+Set the numerator and denominator equal to zero:
+
+- \\(x-8=0\Rightarrow x=8\\)
+- \\(x+5=0\Rightarrow x=-5\\)
+- \\(2x-3=0\Rightarrow x=\frac32\\)
+
+These divide the number line into four intervals.
+
+| Interval            | Sign of expression | Satisfies \\(\leq 0\\)? |
+| ------------------- | ------------------ | ----------------------- |
+| \\(x<-5\\)          | Negative           | Yes                     |
+| \\(-5\<x<\frac32\\) | Positive           | No                      |
+| \\(\frac32\<x<8\\)  | Negative           | Yes                     |
+| \\(x>8\\)           | Positive           | No                      |
+
+### Step 4: Check the endpoints
+
+- \\(x=-5\\): Excluded because the denominator is zero.
+- \\(x=\frac32\\): Excluded because the denominator is zero.
+- \\(x=8\\): Included because the expression equals zero and the inequality allows equality.
+
+## Final answer
+
+\\[ \boxed{x\in(-\infty,-5)\cup\left(\frac32,8\right]} \\]
+
+CAT shortcut: For rational inequalities, bring everything to one side, find the critical points, and use a sign chart. Never cross-multiply without knowing the sign of the denominator.`;
+
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+function conv(src){
+  const M=[];
+  const keep=(t,d,raw)=>{M.push({t:t.trim().replace(/\\([<>])/g,'$1'),d,raw});return '\u0001'+(M.length-1)+'\u0002';};
+  let s=src.replace(/\r/g,'')
+    .replace(/\\{1,2}\[([\s\S]*?)\\{1,2}\]/g,(m,t)=>keep(t,1,m))
+    .replace(/\$\$([\s\S]*?)\$\$/g,(m,t)=>keep(t,1,m))
+    .replace(/\\{1,2}\(([\s\S]*?)\\{1,2}\)/g,(m,t)=>keep(t,0,m));
+  const back=t=>t.replace(/\u0001(\d+)\u0002/g,(m,i)=>M[i].raw);
+  function inl(t){
+    const codes=[];
+    t=t.replace(/`([^`]+)`/g,(m,c)=>{codes.push(c);return '\u0003'+(codes.length-1)+'\u0004';});
+    t=esc(t)
+      .replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g,'<img alt="$1" src="$2">')
+      .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g,'<a href="$2">$1</a>')
+      .replace(/\*\*\*(.+?)\*\*\*/g,'<b><i>$1</i></b>')
+      .replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')
+      .replace(/(^|[^\w*])\*(?!\s)(.+?)\*(?!\w)/g,'$1<i>$2</i>')
+      .replace(/~~(.+?)~~/g,'<s>$1</s>')
+      .replace(/\\(&lt;|&gt;|[*_#\-])/g,'$1')
+      .replace(/\u0003(\d+)\u0004/g,(m,i)=>'<code>'+esc(back(codes[i]))+'</code>')
+      .replace(/\u0001(\d+)\u0002/g,(m,i)=>{const x=M[i];return x.d?'\\['+esc(x.t)+'\\]':'\\('+esc(x.t)+'\\)';});
+    return t;
+  }
+  const LI=/^(\s*)([-*+]|\d+[.)])\s+(.*)$/;
+  const SEP=/^\s*\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?\s*$/;
+  const cells=r=>r.trim().replace(/^\||\|$/g,'').split('|').map(c=>c.trim());
+  const blockStart=(l,n)=>/^\s*(```|#{1,6}\s|>)/.test(l)||LI.test(l)||/^\s*([-*_])(\s*\1){2,}\s*$/.test(l)||(l.includes('|')&&n!==undefined&&SEP.test(n));
+  const L=s.split('\n');let out='',i=0;
+  while(i<L.length){
+    const l=L[i];let m;
+    if(/^\s*$/.test(l)){i++;continue;}
+    if(/^\s*```/.test(l)){const c=[];i++;while(i<L.length&&!/^\s*```/.test(L[i]))c.push(L[i++]);i++;out+='<pre><code>'+esc(back(c.join('\n')))+'</code></pre>';continue;}
+    if(m=l.match(/^(#{1,6})\s+(.*?)\s*#*$/)){out+='<h'+m[1].length+'>'+inl(m[2])+'</h'+m[1].length+'>';i++;continue;}
+    if(/^\s*([-*_])(\s*\1){2,}\s*$/.test(l)){out+='<hr>';i++;continue;}
+    if(/^\s*>/.test(l)){const q=[];while(i<L.length&&/^\s*>/.test(L[i]))q.push(L[i++].replace(/^\s*>\s?/,''));out+='<blockquote><p>'+inl(q.join('\n')).replace(/\n/g,'<br>')+'</p></blockquote>';continue;}
+    if(l.includes('|')&&i+1<L.length&&SEP.test(L[i+1])){
+      const hd=cells(l);i+=2;let h='<table><thead><tr>'+hd.map(c=>'<th>'+inl(c)+'</th>').join('')+'</tr></thead><tbody>';
+      while(i<L.length&&L[i].includes('|')&&!/^\s*$/.test(L[i])){h+='<tr>'+cells(L[i]).map(c=>'<td>'+inl(c)+'</td>').join('')+'</tr>';i++;}
+      out+=h+'</tbody></table>';continue;
+    }
+    if(LI.test(l)){
+      const items=[];
+      while(i<L.length){
+        if(/^\s*$/.test(L[i])){let j=i;while(j<L.length&&/^\s*$/.test(L[j]))j++;if(j<L.length&&LI.test(L[j])){i=j;continue;}break;}
+        const mm=L[i].match(LI);
+        if(mm)items.push({ind:mm[1].length,ord:/\d/.test(mm[2]),t:mm[3]});
+        else if(/^\s+\S/.test(L[i])&&items.length)items[items.length-1].t+=' '+L[i].trim();
+        else break;
+        i++;
+      }
+      let h='';const st=[];
+      for(const it of items){
+        while(st.length&&it.ind<st[st.length-1].ind)h+='</li></'+st.pop().tag+'>';
+        const top=st[st.length-1],tag=it.ord?'ol':'ul';
+        if(!top||it.ind>top.ind){h+='<'+tag+'><li>'+inl(it.t);st.push({ind:it.ind,tag});}
+        else h+='</li><li>'+inl(it.t);
+      }
+      while(st.length)h+='</li></'+st.pop().tag+'>';
+      out+=h;continue;
+    }
+    const p=[];
+    while(i<L.length&&!/^\s*$/.test(L[i])&&(p.length===0||!blockStart(L[i],L[i+1])))p.push(L[i++]);
+    out+='<p>'+inl(p.join('\n')).replace(/\n/g,'<br>')+'</p>';
+  }
+  return out;
+}
+
+async function typeset(){
+  if(!window.MathJax||!MathJax.typesetPromise)return;
+  try{await MathJax.startup.promise;MathJax.typesetClear([cap]);await MathJax.typesetPromise([cap]);}catch(e){console.error(e);}
+}
+function render(){
+  cap.innerHTML=conv(inp.value)||'<p class="ph">Rendered output appears here…</p>';
+  typeset();
+}
+let tm;inp.addEventListener('input',()=>{clearTimeout(tm);tm=setTimeout(render,200);});
+
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),2600);}
+
+async function snap(){
+  if(typeof html2canvas==='undefined')throw new Error('html2canvas not loaded');
+  await typeset();
+  cap.querySelectorAll('mjx-container svg').forEach(s=>{const r=s.getBoundingClientRect();if(r.width){s.setAttribute('width',r.width);s.setAttribute('height',r.height);}});
+  try{return await html2canvas(cap,{scale:2,backgroundColor:'#ffffff',useCORS:true,width:cap.scrollWidth,windowWidth:Math.max(cap.scrollWidth,800)});}
+  finally{render();}
+}
+const blobOf=c=>new Promise(r=>c.toBlob(r,'image/png'));
+
+$('copy').onclick=async()=>{
+  if(!inp.value.trim())return toast('Paste some text first');
+  toast('Rendering image…');
+  try{
+    const c=await snap(),b=await blobOf(c);
+    try{await navigator.clipboard.write([new ClipboardItem({'image/png':b})]);toast('Image copied — paste it anywhere');}
+    catch(e){$('pv').src=c.toDataURL('image/png');$('dlg').classList.add('on');toast('Clipboard blocked — use the preview');}
+  }catch(e){console.error(e);toast('Could not render the image');}
+};
+$('dl').onclick=async()=>{
+  if(!inp.value.trim())return toast('Paste some text first');
+  try{
+    const c=await snap(),url=c.toDataURL('image/png');
+    const a=document.createElement('a');a.href=url;a.download='chatgpt-output.png';document.body.appendChild(a);a.click();a.remove();
+    $('pv').src=url;$('dlg').classList.add('on');
+  }catch(e){console.error(e);toast('Could not render the image');}
+};
+$('cls').onclick=()=>$('dlg').classList.remove('on');
+$('paste').onclick=async()=>{try{inp.value=await navigator.clipboard.readText();render();}catch(e){toast('Paste blocked — press Ctrl/Cmd+V in the box');inp.focus();}};
+$('sample').onclick=()=>{inp.value=SAMPLE;render();};
+$('clear').onclick=()=>{inp.value='';render();inp.focus();};
+inp.value=SAMPLE;
+cap.innerHTML=conv(SAMPLE);
+</script>
+</body>
+</html>
