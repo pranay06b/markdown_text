@@ -672,11 +672,41 @@ x \\in (-\\infty,-5) \\cup \\left(\\frac{3}{2},8\\right]
         .then((css) => { katexCss = css; if (modeSelect.value === 'html' && input.value.trim()) rawPreview.textContent = makeCopyHtml(); })
         .catch(() => { katexCss = ''; });
 
-      // GitHub Pages-compatible CounterAPI v2 integration.
-      // This uses a PUBLIC counter, so no API token is embedded in this static page.
-      // Workspace and counter name must match the public counter in CounterAPI.
+      // CounterAPI V2 integration for GitHub Pages.
+      // The token is AES-256-GCM encrypted in this source file and decrypted
+      // locally at runtime. This is obfuscation only: visitors can recover it
+      // from browser DevTools/network traffic. Do not treat it as a secret.
       const visitorCount = $('#visitorCount');
       const visitorCaption = $('.visitor-counter-caption');
+
+      async function decryptCounterApiToken() {
+        if (!window.crypto || !window.crypto.subtle) {
+          throw new Error('Web Crypto is unavailable; open the HTTPS GitHub Pages site.');
+        }
+
+        // AES-256-GCM decryption key, split into chunks.
+        const encryptedKeyParts = [
+          [109, 124, 248, 231, 46, 196, 30, 239],
+          [14, 50, 134, 217, 101, 229, 101, 28],
+          [102, 140, 244, 114, 161, 78, 227, 189],
+          [3, 105, 77, 147, 52, 176, 25, 49]
+        ];
+        const rawKey = new Uint8Array(encryptedKeyParts.flat());
+        const cryptoKey = await window.crypto.subtle.importKey(
+          'raw', rawKey, { name: 'AES-GCM' }, false, ['decrypt']
+        );
+
+        const iv = new Uint8Array([181, 76, 35, 224, 19, 166, 170, 160, 181, 198, 249, 91]);
+        const encryptedToken = Uint8Array.from(
+          atob('b/GwseBGxXWl9lkRpczLubSAKZW50XFVwtGUva9iUFLb1MLUvbJmc/pspzrJrikxcHQ4ssVJvqB46pg='), character => character.charCodeAt(0)
+        );
+        const decrypted = await window.crypto.subtle.decrypt(
+          { name: 'AES-GCM', iv },
+          cryptoKey,
+          encryptedToken
+        );
+        return new TextDecoder().decode(decrypted);
+      }
 
       async function updateVisitorCounter() {
         try {
@@ -684,12 +714,14 @@ x \\in (-\\infty,-5) \\cup \\left(\\frac{3}{2},8\\right]
             throw new Error('CounterAPI library did not load');
           }
 
+          const accessToken = await decryptCounterApiToken();
           const counter = new window.Counter({
             workspace: 'pranays-team-6113',
+            accessToken,
             timeout: 8000
           });
 
-          // Count each page load and display the value returned by CounterAPI.
+          // Increment once per page load and show the value returned by V2.
           const result = await counter.up('first-counter-6113');
           const value = Number(result && result.value);
           if (!Number.isFinite(value)) {
