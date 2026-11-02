@@ -218,7 +218,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/counterapi/dist/counter.browser.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/counterapi@3.1.0/dist/counter.browser.min.js"></script>
 </head>
 <body>
   <header class="site-header">
@@ -684,28 +684,34 @@ x \\in (-\\infty,-5) \\cup \\left(\\frac{3}{2},8\\right]
           throw new Error('Web Crypto is unavailable; open the HTTPS GitHub Pages site.');
         }
 
-        // AES-256-GCM decryption key, split into chunks.
+        // AES-256-GCM bundle. The key and ciphertext are kept together so this
+        // file is self-consistent. This is obfuscation, not secure secret storage.
         const encryptedKeyParts = [
-          [109, 124, 248, 231, 46, 196, 30, 239],
-          [14, 50, 134, 217, 101, 229, 101, 28],
-          [102, 140, 244, 114, 161, 78, 227, 189],
-          [3, 105, 77, 147, 52, 176, 25, 49]
+          [205, 91, 91, 67, 118, 241, 94, 165],
+          [94, 48, 244, 150, 78, 245, 188, 218],
+          [47, 213, 16, 238, 61, 49, 41, 37],
+          [54, 139, 140, 215, 64, 135, 186, 126]
         ];
         const rawKey = new Uint8Array(encryptedKeyParts.flat());
         const cryptoKey = await window.crypto.subtle.importKey(
           'raw', rawKey, { name: 'AES-GCM' }, false, ['decrypt']
         );
 
-        const iv = new Uint8Array([181, 76, 35, 224, 19, 166, 170, 160, 181, 198, 249, 91]);
+        const iv = new Uint8Array([225, 178, 60, 43, 135, 174, 159, 11, 197, 211, 12, 222]);
         const encryptedToken = Uint8Array.from(
-          atob('b/GwseBGxXWl9lkRpczLubSAKZW50XFVwtGUva9iUFLb1MLUvbJmc/pspzrJrikxcHQ4ssVJvqB46pg='), character => character.charCodeAt(0)
+          atob('6ot812vz7PQt6IdkS5d4SdOWnkwnlLXGunQ3XZiLFjF6J83PmbsusgLyO8aQfb64pqTp572UAxcCVzs='), character => character.charCodeAt(0)
         );
-        const decrypted = await window.crypto.subtle.decrypt(
-          { name: 'AES-GCM', iv },
-          cryptoKey,
-          encryptedToken
-        );
-        return new TextDecoder().decode(decrypted);
+
+        try {
+          const decrypted = await window.crypto.subtle.decrypt(
+            { name: 'AES-GCM', iv },
+            cryptoKey,
+            encryptedToken
+          );
+          return new TextDecoder().decode(decrypted);
+        } catch (error) {
+          throw new Error('CounterAPI token decryption failed. Deploy the matching complete HTML file; do not combine code from different versions.', { cause: error });
+        }
       }
 
       async function updateVisitorCounter() {
