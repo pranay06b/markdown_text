@@ -672,47 +672,12 @@ x \\in (-\\infty,-5) \\cup \\left(\\frac{3}{2},8\\right]
         .then((css) => { katexCss = css; if (modeSelect.value === 'html' && input.value.trim()) rawPreview.textContent = makeCopyHtml(); })
         .catch(() => { katexCss = ''; });
 
-      // CounterAPI V2 integration for GitHub Pages.
-      // The token is AES-256-GCM encrypted in this source file and decrypted
-      // locally at runtime. This is obfuscation only: visitors can recover it
-      // from browser DevTools/network traffic. Do not treat it as a secret.
+      // CounterAPI V2 public-counter integration for GitHub Pages.
+      // Public counters can be accessed by workspace + counter name without
+      // an Authorization header. This avoids the API's Authorization CORS
+      // preflight failure and keeps private credentials out of browser code.
       const visitorCount = $('#visitorCount');
       const visitorCaption = $('.visitor-counter-caption');
-
-      async function decryptCounterApiToken() {
-        if (!window.crypto || !window.crypto.subtle) {
-          throw new Error('Web Crypto is unavailable; open the HTTPS GitHub Pages site.');
-        }
-
-        // AES-256-GCM bundle. The key and ciphertext are kept together so this
-        // file is self-consistent. This is obfuscation, not secure secret storage.
-        const encryptedKeyParts = [
-          [205, 91, 91, 67, 118, 241, 94, 165],
-          [94, 48, 244, 150, 78, 245, 188, 218],
-          [47, 213, 16, 238, 61, 49, 41, 37],
-          [54, 139, 140, 215, 64, 135, 186, 126]
-        ];
-        const rawKey = new Uint8Array(encryptedKeyParts.flat());
-        const cryptoKey = await window.crypto.subtle.importKey(
-          'raw', rawKey, { name: 'AES-GCM' }, false, ['decrypt']
-        );
-
-        const iv = new Uint8Array([225, 178, 60, 43, 135, 174, 159, 11, 197, 211, 12, 222]);
-        const encryptedToken = Uint8Array.from(
-          atob('6ot812vz7PQt6IdkS5d4SdOWnkwnlLXGunQ3XZiLFjF6J83PmbsusgLyO8aQfb64pqTp572UAxcCVzs='), character => character.charCodeAt(0)
-        );
-
-        try {
-          const decrypted = await window.crypto.subtle.decrypt(
-            { name: 'AES-GCM', iv },
-            cryptoKey,
-            encryptedToken
-          );
-          return new TextDecoder().decode(decrypted);
-        } catch (error) {
-          throw new Error('CounterAPI token decryption failed. Deploy the matching complete HTML file; do not combine code from different versions.', { cause: error });
-        }
-      }
 
       async function updateVisitorCounter() {
         try {
@@ -720,10 +685,8 @@ x \\in (-\\infty,-5) \\cup \\left(\\frac{3}{2},8\\right]
             throw new Error('CounterAPI library did not load');
           }
 
-          const accessToken = await decryptCounterApiToken();
           const counter = new window.Counter({
             workspace: 'pranays-team-6113',
-            accessToken,
             timeout: 8000
           });
 
