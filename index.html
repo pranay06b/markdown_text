@@ -190,6 +190,22 @@
     .toast.show { opacity: 1; transform: translate(-50%, 0); }
     .toast.success { background: #176c45; }
     footer { padding: 23px 20px 32px; text-align: center; color: #89909c; font-size: 11px; }
+    .visitor-counter {
+      display: inline-flex; align-items: center; justify-content: center; gap: 20px;
+      margin: 22px auto 0; padding: 18px 28px; min-width: 290px;
+      border: 1px solid #c4d4ff; border-radius: 18px;
+      background: linear-gradient(135deg, #ffffff 0%, #edf3ff 100%);
+      box-shadow: 0 10px 30px rgba(36,91,232,.15); color: var(--text);
+    }
+    .visitor-counter-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+    .visitor-counter-label { font-size: 12px; font-weight: 850; letter-spacing: .10em; text-transform: uppercase; color: #435578; }
+    .visitor-counter-caption { font-size: 11px; color: #737f93; }
+    .visitor-counter-number {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 72px; min-height: 48px; font-size: 38px;
+      line-height: 1; font-weight: 900; letter-spacing: -.05em;
+      color: var(--accent); font-variant-numeric: tabular-nums;
+    }
     @media (max-width: 1020px) { .workspace { grid-template-columns: 1fr; } textarea,.preview { height: 390px; } .below { grid-template-columns: 1fr; } .intro { margin-bottom: 23px; } }
     @media (max-width: 560px) {
       .site-header { height: 60px; padding: 0 15px; } .header-note { display: none; } main { padding-top: 30px; padding-left: 12px; padding-right: 12px; }
@@ -202,6 +218,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/counterapi/dist/counter.browser.min.js"></script>
 </head>
 <body>
   <header class="site-header">
@@ -214,6 +231,13 @@
       <span class="eyebrow"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3m13-5h3a2 2 0 0 1 2 2v3M3 16v3a2 2 0 0 0 2 2h3m13-5v3a2 2 0 0 1-2 2h-3"/><path d="m8 12 2.5 2.5L16 9"/></svg> Free · Runs in your browser</span>
       <h1>Make ChatGPT text look right<br class="desktop-break" /> wherever you paste it.</h1>
       <p>Paste a raw ChatGPT response, preview the formatting, and copy it as <strong>rich text</strong> for Word, Google Docs, email, and more.</p>
+      <div class="visitor-counter" aria-label="Website visitor counter">
+        <div class="visitor-counter-copy">
+          <span class="visitor-counter-label">Total visits</span>
+          <span class="visitor-counter-caption">Thanks for stopping by</span>
+        </div>
+        <span id="visitorCount" class="visitor-counter-number" aria-live="polite">—</span>
+      </div>
     </section>
 
     <section class="workspace" aria-label="Markdown converter">
@@ -648,12 +672,42 @@ x \\in (-\\infty,-5) \\cup \\left(\\frac{3}{2},8\\right]
         .then((css) => { katexCss = css; if (modeSelect.value === 'html' && input.value.trim()) rawPreview.textContent = makeCopyHtml(); })
         .catch(() => { katexCss = ''; });
 
+      // GitHub Pages-compatible CounterAPI v2 integration.
+      // This uses a PUBLIC counter, so no API token is embedded in this static page.
+      // Workspace and counter name must match the public counter in CounterAPI.
+      const visitorCount = $('#visitorCount');
+      const visitorCaption = $('.visitor-counter-caption');
+
+      async function updateVisitorCounter() {
+        try {
+          if (typeof window.Counter !== 'function') {
+            throw new Error('CounterAPI library did not load');
+          }
+
+          const counter = new window.Counter({
+            workspace: 'pranays-team-6113',
+            timeout: 8000
+          });
+
+          // Count each page load and display the value returned by CounterAPI.
+          const result = await counter.up('first-counter-6113');
+          const value = Number(result && result.value);
+          if (!Number.isFinite(value)) {
+            throw new Error('CounterAPI returned an invalid count');
+          }
+
+          visitorCount.textContent = value.toLocaleString();
+          visitorCaption.textContent = 'Total recorded page visits';
+        } catch (error) {
+          console.error('Visitor counter unavailable:', error);
+          visitorCount.textContent = '—';
+          visitorCaption.textContent = 'Visit count temporarily unavailable';
+        }
+      }
+
+      updateVisitorCounter();
       render();
     });
   </script>
-  <!-- counterAPI library, insert anywhere on the page. -->
-<script src="https://counterapi.com/c.js?ns=https://pranay06b.github.io/markdown_text/" async ></script>
-<!-- Add the counter instance somewhere to your template... -->
-<div class="counterapi" style="min-height:44px" ></div>
 </body>
 </html>
